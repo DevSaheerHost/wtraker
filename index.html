@@ -1,321 +1,56 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMEI Tracker</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-<style>
- *{
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: "poppins", sans-serif;
-  font-size: 18px;
-  text-align: center;
-  
-}
-body {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.container{
-  width: 500px;
-  padding: 30px;
-  border: 1px solid #eeeeee;
-  border-radius: 10px;
-  background: #003B5B;
-  margin: 6px;
-}
-h4{
-  margin-bottom: 16px;
-  font-size: 24px;
-  color: white;
-}
-input{
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  outline: none;
-  
-  border: none;
-  border-radius: 6px;
-}
-textarea{
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  
-  border: none;
-  border-radius: 6px;
-}
-#submit{
-  border: none;
-  background: orangered;
-  color: white;
-  width: 200px;
-  margin-top: 10px;
-  border-radius: 5px;
-  padding: 10px;
-}
-#submit:hover{
-  background: #333333;
-}
-#file{
-  padding: 10px;
-  outline: none;
-  width: 100%;
-  
-  border: none;
-  transform: translateX(-9px);
-}
-</style>
-  
-<div class="container">
-  <!-- <label for="info">info</label> -->
-  
-<h4>Lost My Mobile Phone</h4>
-<form method="POST" action="https://formsubmit.co/sheerbabu549@gmail.com" enctype="multipart/form-data">
-  
-    <input type="text" name="name" placeholder="Your Name" required>
-    <!--  <input type="email" name="email" required> -->
-    <input type="hidden" name="_next" value="https://www.google.com">
-    <input type="hidden" name="_subject" value="I Have Your Mobile!">
-    <input type="hidden" name="_cc" value="saheerb28@gmail.com">
-  
-    <input type="hidden" name="_captcha" value="false">
-  
-  
-  
-  
-    <input type="hidden" name="_template" value="table">
-  
-    <!-- <input type="hidden" name="_webhook" value="https://www.google.com/your-webhook"> -->
-  
-    <!-- { "form_data": { "name": "Devro LABS", "email": "hello@devrolabs.com", "message": "hello! there" } } -->
-  
-    <input type="text" name="_honey" style="display:none">
-    
-  <input type="email" name="email" placeholder="Your Email">
-  <textarea name="message" placeholder="Details About Location or Any Information (OPTNL)"></textarea>
+    <header>
+        <h1>IMEI Inventory Manager</h1>
+    </header>
 
-  <!-- <button type="submit">Send File</button> -->
-  
-  <input type="hidden" name="_autoresponse" value="Thank's Your Response. Im contact you later, Please keep the mobile Safe...">
-  
-    <textarea type="text" name="message" placeholder="Tell More (optional)">I Got Youre Mobile </textarea>
-    
-      <input type="file" name="attachment" accept="image/png, image/jpeg" style="color: white;" id="file">
-    
-    <button id="submit" type="submit">Send</button>
-</form>
+    <main>
+        <section id="data-form-section">
+            <button id="show-add-btn">➕ Add New Device</button>
+            <form id="imei-form" class="hidden">
+                <h2>Device Details</h2>
+                <input type="text" id="imei" placeholder="IMEI" required>
+                <input type="text" id="model" placeholder="Model (e.g., IP14PRO)" required>
+                <input type="text" id="storage" placeholder="Storage (e.g., 256GB)">
+                <input type="text" id="battery-health" placeholder="Battery Health (e.g., 100%)">
+                <input type="text" id="color" placeholder="Color">
+                <select id="blacklist-status">
+                    <option value="CLEAN">CLEAN</option>
+                    <option value="BLACKLISTED">BLACKLISTED</option>
+                </select>
+                <input type="text" id="condition" placeholder="Condition (e.g., A++)">
+                <input type="text" id="buyer-name" placeholder="Buyer Name">
+                <input type="number" id="buying-price" placeholder="Buying Price (e.g., 2200)">
+                <input type="date" id="warranty-start" placeholder="Warranty Start Date">
+                <input type="date" id="warranty-end" placeholder="Warranty End Date">
+                <select id="warranty-status">
+                    <option value="EXPIRE">EXPIRE</option>
+                    <option value="ACTIVE">ACTIVE</option>
+                </select>
 
-</div>
+                <button type="submit" id="save-btn">Save Data</button>
+                <button type="button" id="cancel-btn">Cancel</button>
+            </form>
+        </section>
 
-  
-  
+        <section id="data-list-section">
+            <h2>Current Inventory</h2>
+            <input type="text" id="search-input" placeholder="Search by IMEI or Model...">
+            <div id="device-list">
+                <p id="loading-message">Loading data...</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="script.js"></script>
 </body>
-<script>
-  // fetch("https://formsubmit.co/ajax/sheerbabu549@gmail.com", {
-  //     method: "POST",
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Accept': 'application/json'
-  //     },
-  //     body: JSON.stringify({
-  //       name: "FormSubmit",
-  //       message: "I'm from Devro LABS"
-  //     })
-  //   })
-  //   .then(response => response.json())
-  //   .then(data => console.log(data))
-  //   .catch(error => console.log(error));
-  
-console.log(navigator.platform);
-console.log(navigator.appCodeName)
-console.log(navigator.appVersion);
-
-console.log(navigator.appName);
-
-console.log(navigator.vendor)
-console.log('Max touch points '+navigator.maxTouchPoints);
-console.log(navigator.connection);
-console.log(navigator.connection.onchange);
-console.log(navigator.connection.effectiveType);
-console.log(navigator.connection.type);
-console.log(navigator.connection);
-console.log(navigator.deviceMemory);
-console.log(navigator.gpu);
-console.log(navigator.languages[0]);
-console.log(navigator.languages[1]);
-console.log(navigator.language);
-console.log(navigator);
-console.log(navigator.userAgentData.brands[0].brand);
-console.log(navigator.userAgentData.brands[0].version);
-
-console.log(navigator.userAgentData.brands[1].brand);
-console.log(navigator.userAgentData.brands[1].version);
-
-console.log(navigator.userAgentData.brands[2].brand);
-console.log(navigator.userAgentData.brands[2].version);
-
-console.log(navigator.userAgentData.mobile)
-
-console.log(navigator.userAgentData)
-console.log(navigator.userAgent)
-console.log(navigator.webdriver)
-console.log(navigator)
-console.log(navigator.product)
-console.log(navigator.productSub)
-
-
-
-
-
-
-
-
-  
-  var deviceInfo = getDeviceInfo();
-  console.log('Getting devinfo, ', deviceInfo)
-    // Display device information
- //   var infoContainer = document.getElementById('device-info');
-    var osInfo = 'Operating System: ' + deviceInfo.os;
-    
-    var userAgentInfo = 'User Agent: ' + deviceInfo.userAgent;
-  console.log('Getting UserAgentInfo')
-  
-
-          // Get a reference to the database service
-          
-    var mainTag = deviceInfo.userAgent
-          
-
-    function getDeviceInfo() {
-    var userAgent = navigator.userAgent;
-    var deviceInfo = {};
-  
-    // Extract device information from user agent string
-    if (userAgent.match(/Android/i)) {
-      deviceInfo.os = 'Android';
-    } else if (userAgent.match(/iPhone|iPad|iPod/i)) {
-      deviceInfo.os = 'iOS';
-      console.log(deviceInfo.os)
-    } else if (userAgent.match(/Windows/i)) {
-      deviceInfo.os = 'Windows';
-    } else if (userAgent.match(/Macintosh|MacIntel/i)) {
-      deviceInfo.os = 'Mac';
-    } else if (userAgent.match(/Linux/i)) {
-      deviceInfo.os = 'Linux';
-    } else {
-      deviceInfo.os = 'Unknown';
-    }
-  
-    deviceInfo.userAgent = userAgent;
-  
-  console.log('user agent= '+ userAgent)
-  
-  console.log('Platform '+navigator.platform);
-  var platform= 'Platform '+navigator.platform;
-  console.log('AppCode '+navigator.appCodeName)
-  console.log('AppVertion '+navigator.appVersion);
-  
-  console.log('AppName '+navigator.appName);
-  
-  console.log( 'Vendor '+navigator.vendor)
-  console.log('Max touch points ' + navigator.maxTouchPoints);
-  console.log('Connection '+navigator.connection);
-  console.log('Connection.onchange '+navigator.connection.onchange);
-  console.log('Connection.effectiveType '+navigator.connection.effectiveType);
-  console.log('Connection.type '+navigator.connection.type);
-  
-  console.log('dev Memory '+navigator.deviceMemory);
-  console.log('GPU '+navigator.gpu);
-  console.log('Lang0 '+navigator.languages[0]);
-  console.log('lang1 '+navigator.languages[1]);
-  console.log('Lang '+navigator.language);
-  
-  
-  console.log('Brand 0'+navigator.userAgentData.brands[0].brand);
-  console.log('Brand0 Version'+navigator.userAgentData.brands[0].version);
-  
-  console.log('Brand 1'+navigator.userAgentData.brands[1].brand);
-  console.log('Brand 1 version'+navigator.userAgentData.brands[1].version);
-  
-  console.log('Brand 2'+navigator.userAgentData.brands[2].brand);
-  console.log('Brand 2 version'+navigator.userAgentData.brands[2].version);
-  
-  console.log('Mobile = '+navigator.userAgentData.mobile)
-  console.log(navigator);
-  console.log(navigator.userAgentData)
-  
-  //ip
-  
-  fetch('https://api.ipify.org?format=json')
-    .then(results => results.json())
-    .then(data => console.log(data)).then(function() {
-        // var dataIp = data.IP
-        console.log("IP value added successfully!");
-  
-        //after that
-      
-  
-      })
-      .catch(function(error)
-      {
-      console.error("Error adding tag and value:", error);
-   alert('Refresh the page : ', error )
-      })
-    
-  
-  
-  //
-  
-  fetch("https://formsubmit.co/ajax/sheerbabu549@gmail.com", {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        Info: 'just Entried to the site',
-        OS: deviceInfo.os,
-        Platform: platform,
-        AppCode: navigator.appCodeName,
-        AppVertion: navigator.appVersion,
-        AppName: navigator.appName,
-        Vendor:  navigator.vendor,
-        MaxTouchPoints: navigator.maxTouchPoints,
-        Connection: navigator.connection.type,
-        ConnectionEffctivType: navigator.connection.effectiveType,
-        DeviceRam: navigator.deviceMemory+' GB',
-        Product : navigator.product,
-        ProductSub: navigator.productSub,
-        WebDriver : navigator.webdriver
-        
-        
-        
-      })
-    })
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.log(error));
-  
-  
-  
-    return deviceInfo;
-  }
-  
-  
-
-
-  
-
-</script>
 </html>
