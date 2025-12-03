@@ -18,7 +18,13 @@ body {
     color: var(--text-color);
     padding: 10px;
 }
-
+button{
+    padding: 0.5rem 1rem;
+    background: white;
+    border: none;
+    border-radius: 7px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.11);
+}
 header {
     text-align: center;
     padding: 15px 0;
@@ -76,6 +82,12 @@ header {
     cursor: pointer;
 }
 
+.addBtn 
+{
+    background: var(--primary-color);
+    color: #fff;
+}
+
 .edit-btn {
     background-color: #ffc107;
     color: var(--text-color);
@@ -85,6 +97,46 @@ header {
     background-color: var(--danger-color);
     color: white;
 }
+
+
+
+
+
+
+/* styles.css */
+#upload-section {
+    background-color: #e9ecef;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+#file-input {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px dashed #6c757d;
+    border-radius: 4px;
+    display: block;
+    width: 100%;
+}
+
+#upload-btn {
+    background-color: #28a745; /* Green color */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#upload-btn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+
 
 /* Utility Class */
 .hidden {

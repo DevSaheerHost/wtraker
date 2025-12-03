@@ -198,6 +198,117 @@ searchInput.addEventListener('keyup', (e) => {
 
 
 
+// H. BULK UPLOAD ELEMENTS AND LOGIC
+
+const fileInput = document.getElementById('file-input');
+const uploadBtn = document.getElementById('upload-btn');
+
+// Enable/Disable upload button based on file selection
+fileInput.addEventListener('change', () => {
+    uploadBtn.disabled = !fileInput.files.length;
+});
+
+uploadBtn.addEventListener('click', handleFileUpload);
+
+function handleFileUpload() {
+    const file = fileInput.files[0];
+    if (!file) {
+        alert('Please select a file to upload.');
+        return;
+    }
+
+    const reader = new FileReader();
+    
+    // Once file is read, process it
+    reader.onload = function(e) {
+        try {
+            const fileContent = e.target.result;
+            let dataArray = [];
+
+            if (file.name.endsWith('.json')) {
+                // Handle JSON file
+                dataArray = JSON.parse(fileContent);
+            } else if (file.name.endsWith('.csv')) {
+                // Handle CSV file (requires a simple parser)
+                dataArray = parseCSV(fileContent);
+            }
+
+            if (dataArray.length > 0) {
+                if (confirm(`Found ${dataArray.length} records. Do you want to upload this data to Firebase?`)) {
+                    bulkUploadToFirebase(dataArray);
+                }
+            } else {
+                alert('Could not parse any valid data from the file.');
+            }
+        } catch (error) {
+            console.error('File parsing error:', error);
+            alert('Error processing file. Check format.');
+        }
+    };
+    
+    reader.readAsText(file);
+}
+
+// Simple CSV Parser (Assumes the first row is headers)
+function parseCSV(csvText) {
+    const lines = csvText.split('\n').filter(line => line.trim() !== '');
+    if (lines.length === 0) return [];
+    
+    // Normalize headers to match Firebase keys (e.g., "Battery Health" -> "Battery Health")
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const result = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+        if (values.length !== headers.length) continue; // Skip incomplete rows
+
+        const obj = {};
+        headers.forEach((header, index) => {
+            // Important: Ensures the keys match your existing structure
+            obj[header] = values[index]; 
+        });
+        
+        // Basic check for required field
+        if (obj.IMEI) {
+            result.push(obj);
+        }
+    }
+    return result;
+}
+
+// Function to upload the array of data to Firebase
+function bulkUploadToFirebase(dataArray) {
+    let successCount = 0;
+    let failedCount = 0;
+    
+    dataArray.forEach(deviceData => {
+        // Use push() to create a unique key for each item, 
+        // preventing overwriting if IMEI is used as a key in bulk upload.
+        devicesRef.push(deviceData) 
+            .then(() => {
+                successCount++;
+            })
+            .catch(error => {
+                failedCount++;
+                console.error('Upload failed for data:', deviceData, error);
+            });
+    });
+
+    // Note: Since Firebase writes are asynchronous, this alert might fire before all uploads finish.
+    // A more robust system would track all promises.
+    alert(`Bulk upload initiated. Total records: ${dataArray.length}. Check console for final status.`);
+    
+    fileInput.value = ''; // Clear file input
+    uploadBtn.disabled = true;
+}
+
+
+
+
+
+
+
+
 
 // calculate warranty date
 
